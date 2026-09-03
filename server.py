@@ -55,7 +55,7 @@ def app(environ, start_response):
             else:
                 tasks[next_id] = json.loads(length_content.decode('utf-8'))
                 body = json.dumps(tasks[next_id]).encode('utf-8')
-                next_id + 1
+                next_id = next_id + 1
 
                 start_response('201 Created', HEDERS)
                 return [body]
@@ -67,7 +67,10 @@ def app(environ, start_response):
 
                 task_id = int(parts[1])
 
-                if tasks.get(task_id) is None:
+                #_ se guarda la tarea encontrada en "task" para poder reutilizarla en el chequeo y en el .update()
+                task = tasks.get(task_id)
+
+                if task is None:
                     start_response('404 Not Found', HEDERS)
                     return [b"Ruta no encuentrada"]
                 else:
@@ -105,7 +108,7 @@ def app(environ, start_response):
 
         case _:
             start_response('405 Method Not Allowed', HEDERS)
-            return [b"Hola"]
+            return [b"Error"]
 
 
 with make_server("", 9292, app) as server:
