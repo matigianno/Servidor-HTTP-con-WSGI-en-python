@@ -9,11 +9,11 @@ HEDERS = [("Content-Type", "application/json")]
 # que obtiene "environ" y "start_response" como parametros.
 # environ tiene dentro todo lo que se pide al servidor.
 def app(environ, start_response):
+    #proximo id a utilizar
     global next_id
 
     info = environ['PATH_INFO']
     verb = environ['REQUEST_METHOD']
-
     #el 0 es para evitar errores en caso de que el contenido este basio
     length = int(environ.get('CONTENT_LENGTH',0))
     length_content = environ['wsgi.input'].read(length)
@@ -55,18 +55,40 @@ def app(environ, start_response):
             else:
                 tasks[next_id] = json.loads(length_content.decode('utf-8'))
                 body = json.dumps(tasks[next_id]).encode('utf-8')
-                next_id = next_id + 1
+                next_id + 1
 
                 start_response('201 Created', HEDERS)
                 return [body]
 
-        case 'PATCH':
-            start_response('501 Not Implemented', HEDERS)
-            return [b"PATCH no implementado"]
 
+        case 'PATCH':
+
+            if size == 2:
+
+                task_id = int(parts[1])
+
+                if tasks.get(task_id) is None:
+                    start_response('404 Not Found', HEDERS)
+                    return [b"Ruta no encuentrada"]
+                else:
+                    #se toma los datos enviados por el usuario y luego se cargan en "task" que al apuntar a "taskS" hace la actualizacion del mismo
+                    task.update(json.loads(length_content.decode('utf-8'))
+                    body = json.dumps(task).encode('utf-8')
+                    start_response('200 OK', HEDERS)
+                    return [body]
+                
+            else:
+                start_response('404 Not Found', HEDERS)
+                return [b"Ruta no encuentrada"]
+
+            
         case 'DELETE':
-            start_response('501 Not Implemented', HEDERS)
-            return [b"DELETE no implementado"]
+
+            if size == 2:
+
+            else:
+                start_response('404 Not Found', HEDERS)
+                return [b"Ruta no encuentrada"]            
 
         case _:
             start_response('405 Method Not Allowed', HEDERS)
