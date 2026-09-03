@@ -72,7 +72,7 @@ def app(environ, start_response):
                     return [b"Ruta no encuentrada"]
                 else:
                     #se toma los datos enviados por el usuario y luego se cargan en "task" que al apuntar a "taskS" hace la actualizacion del mismo
-                    task.update(json.loads(length_content.decode('utf-8'))
+                    task.update(json.loads(length_content.decode('utf-8')))
                     body = json.dumps(task).encode('utf-8')
                     start_response('200 OK', HEDERS)
                     return [body]
@@ -85,6 +85,19 @@ def app(environ, start_response):
         case 'DELETE':
 
             if size == 2:
+
+                task_id = int(parts[1])
+
+
+                if tasks.get(task_id) is None:
+                    start_response('404 Not Found', HEDERS)
+                    return [b"Ruta no encuentrada"]
+
+                else:
+                    #se toma los datos enviados por el usuario y luego se cargan en "task" que al apuntar a "taskS" hace la actualizacion del mismo
+                    tasks.pop(task_id)
+                    start_response('204 No Content', HEDERS)
+                    return [b""]          
 
             else:
                 start_response('404 Not Found', HEDERS)
